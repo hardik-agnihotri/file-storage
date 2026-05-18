@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # 1. Object Storage (S3 Compatible Server)
+  object-storage:
+    image: minio/minio:latest
+    container_name: drive_object_storage
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+
+  # 2. Metadata Database
+  metadata-db:
+    image: mongo:6.0
+    container_name: drive_metadata_db
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - mongo_data:/data/db
+
+  # 3. Cache & Queue Memory Store
+  cache-layer:
+    image: redis:7.2-alpine
+    container_name: drive_cache
+    ports:
+      - "6379:6379"
+
+volumes:
+  minio_data:
+  mongo_data:
