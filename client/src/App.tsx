@@ -1,122 +1,83 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import React, { useRef } from 'react';
+import { useAuth, AuthProvider } from './context/AuthContext';
+import { useChunkUpload } from './hooks/useChunkUpload';
+import { AuthGate } from './components/AuthGate';
+import './components/Dashboard.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+function MainDriveDashboard() {
+  const { user, executeLogout } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { uploadLargeFile, isUploading, progress } = useChunkUpload();
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const targetFile = e.target.files[0];
+
+    try {
+      await uploadLargeFile(targetFile);
+      alert(`🎉 Success! ${targetFile.name} chunked and uploaded seamlessly.`);
+    } catch (err) {
+      alert('Upload pipeline failure.');
+    }
+  };
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+    <div className="dashboard-container">
+      <header className="header-bar">
+        <div className="brand-title">Storage Cloud</div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+          <span style={{ fontWeight: 600 }}>Hello, {user?.firstName}</span>
+          <button 
+            className="action-btn" 
+            style={{ backgroundColor: 'transparent', color: 'var(--text-muted)', border: '1px solid var(--color-border)' }}
+            onClick={executeLogout}
+          >
+            Logout
+          </button>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
+      </header>
+
+      <main className="workspace-view">
+        <div className="upload-card-wrapper" onClick={() => fileInputRef.current?.click()}>
+          <input type="file" ref={fileInputRef} className="hidden-file-input" onChange={handleFileChange} />
+          <h3>Drag and drop assets or click here to upload</h3>
+          <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem', marginBottom: '1.5rem' }}>
+            Fully automated direct-to-storage multipart chunking framework.
           </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+          <button className="action-btn" disabled={isUploading}>
+            {isUploading ? 'Streaming Binary Packets...' : 'Select File'}
+          </button>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+          {isUploading && (
+            <div style={{ marginTop: '1.5rem' }}>
+              <p style={{ fontSize: '0.9rem', fontWeight: 600 }}>Uploading: {progress}%</p>
+              <div className="progress-track-bar">
+                <div className="progress-fill" style={{ width: `${progress}%` }}></div>
+              </div>
+            </div>
+          )}
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+      </main>
+    </div>
+  );
 }
 
-export default App
+// Global Orchestrating Root Wrapper
+export default function App() {
+  return (
+    <AuthProvider>
+      <InnerAppGuard />
+    </AuthProvider>
+  );
+}
+
+function InnerAppGuard() {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) return <div style={{ padding: '2rem', textAlign: 'center', fontWeight: 600 }}>Loading Cloud Infrastructure...</div>;
+  
+  // If user is unauthenticated, redirect them automatically to the Auth screen layout gate
+  if (!isAuthenticated) return <AuthGate />;
+
+  return <MainDriveDashboard />;
+}

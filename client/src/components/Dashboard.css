@@ -1,0 +1,102 @@
+/* Dashboard Container Core Layout Frame */
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--bg-primary);
+}
+
+/* Header Action Panel */
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.brand-title {
+  color: var(--color-brand);
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: -0.025em;
+}
+
+/* Operational Workspace Wrapper */
+.workspace-view {
+  flex: 1;
+  padding: 2.5rem 2rem;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* Production Drag & Drop Structural Card Zone */
+.upload-card-wrapper {
+  background-color: var(--bg-surface);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 4rem 2rem;
+  text-align: center;
+  transition: var(--transition-smooth);
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.upload-card-wrapper:hover {
+  border-color: var(--color-brand);
+  background-color: rgba(245, 158, 11, 0.02); /* Slight tint of Amber on focus hover */
+}
+
+/* Native Form Input Suppressor */
+.hidden-file-input {
+  display: none;
+}
+
+/* Brand Button Controls Engine */
+.action-btn {
+  background-color: var(--color-brand);
+  color: #ffffff;
+  border: none;
+  padding: 0.75rem 1.75rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.925rem;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn:hover {
+  background-color: var(--color-brand-hover);
+}
+
+.action-btn:disabled {
+  background-color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Linear Streaming Progress Metrics Frame */
+.progress-track-bar {
+  margin-top: 1rem;
+  background-color: var(--color-border);
+  border-radius: var(--radius-md);
+  height: 8px;
+  width: 100%;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden;
+}
+
+.progress-fill {
+  background-color: var(--color-brand);
+  height: 100%;
+  width: 0%;
+  border-radius: var(--radius-md);
+  transition: width 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
