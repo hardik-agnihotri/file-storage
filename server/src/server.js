@@ -1,4 +1,4 @@
-import app from './app.js';
+import app from './index.js';
 import { connectDatabase } from './config/db.js';
 import { s3Client, BUCKET_NAME } from './config/s3Client.js';
 import { CreateBucketCommand, HeadBucketCommand } from '@aws-sdk/client-s3';
