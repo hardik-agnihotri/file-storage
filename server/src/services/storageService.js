@@ -5,7 +5,6 @@ import { fileRepository } from '../repositories/fileRepository.js';
 
 export const storageService = {
   async uploadSingleFile({ name, folderId, ownerId, mimeType, buffer, sizeInBytes }) {
-    // Content-addressable strategy: Generate an immutable storage key hash
     const uniqueHash = crypto.randomUUID();
     const storageKey = `${ownerId}/${uniqueHash}`;
 
